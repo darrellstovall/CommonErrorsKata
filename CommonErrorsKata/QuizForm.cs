@@ -10,19 +10,24 @@ namespace CommonErrorsKata
 {
     public partial class CommonErrorsForm : Form
     {
+        private const int MinRightAnswers = 15;
         private readonly AnswerQueue<TrueFalseAnswer> answerQueue;
         private readonly string[] files;
         private readonly SynchronizationContext synchronizationContext;
         private int i = 100;
         private string currentBaseName = null;
         private readonly string[] possibleAnswers = null;
+        private readonly string[] fileNames = null;
 
         public CommonErrorsForm()
         {
             InitializeComponent();
             synchronizationContext = SynchronizationContext.Current;
-            files = System.IO.Directory.GetFiles(Environment.CurrentDirectory +  @"..\..\..\ErrorPics");
+            files = System.IO.Directory.GetFiles(Environment.CurrentDirectory +  @"\..\..\ErrorPics");
             possibleAnswers = new string[] { "Missing File", "null instance", "divide by zero" };
+            fileNames = new string[] { "objectref.png", "object_ref_not_set" };
+
+
             lstAnswers.DataSource = possibleAnswers;
             answerQueue = new AnswerQueue<TrueFalseAnswer>(15);
             Next();
@@ -46,14 +51,27 @@ namespace CommonErrorsKata
         {
             i = 100;
             var tokens = currentBaseName.Split(' ');
-            //TODO:  Figure out what is a valid answer.
+
+            if (tokens.Length > 0)
+            {
+                return;
+            }
+            var imageName = tokens[0]
+            var index = Array.IndexOf(fileNames, imageName);
+
+            foreach (var token in tokens)
+            {
+                Console.WriteLine("token" + token);
+            }
+
+
             answerQueue.Enqueue(new TrueFalseAnswer(true));
             Next();
         }
 
         private void Next()
         {
-            if (answerQueue.Count == 15 && answerQueue.Grade >= 98)
+            if (answerQueue.Count == MinRightAnswers && answerQueue.Grade >= 98)
             {
                 MessageBox.Show("Congratulations you've defeated me!");
                 Application.Exit();
